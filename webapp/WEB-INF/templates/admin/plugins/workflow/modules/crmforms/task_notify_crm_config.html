@@ -1,0 +1,116 @@
+<#include "/admin/util/editor/editor.html" />
+
+<#assign message = "">
+<#assign demandCRMCreation = true>
+<#assign statusText = "">
+<#assign object = "">
+<#assign sender = "">
+<#if config??>
+	<#assign message = config.message>
+	<#assign statusText = config.statusText>
+	<#assign demandCRMCreation = config.demandCRMCreation>
+        <#assign object = config.object>
+        <#assign sender = config.sender>
+</#if>
+<div>
+	<fieldset>
+	<@row>
+		<legend>#i18n{module.workflow.crmforms.task_notify_crm_config.title}</legend>
+		<@div class='col-sm-8'>
+			<@formGroup labelKey='#i18n{module.workflow.crmforms.task_notify_crm_config.label_status_text}' mandatory=true>
+				<@input type='text' name='statusText' id='statusText'  value='${(statusText)!}' mandatory=true/>
+			</@formGroup>
+			<@formGroup labelKey='#i18n{module.workflow.crmforms.task_notify_crm_config.label_demand_crm_creation}' >
+				<@radioButton id='demandCRMCreation' name='demandCRMCreation' value='true' labelKey='#i18n{module.workflow.crmforms.task_notify_crm_config.label_demand_crm_creation.yes}' params=((demandCRMCreation?? && demandCRMCreation )?string('checked=true','false')!) />
+				<@radioButton id='demandCRMCreation' name='demandCRMCreation' value='false' labelKey='#i18n{module.workflow.crmforms.task_notify_crm_config.label_demand_crm_creation.no}' params=((demandCRMCreation?? && !demandCRMCreation )?string('checked=true','false')!)/>
+			</@formGroup>
+  			<@formGroup labelKey='#i18n{module.workflow.crmforms.task_notify_crm_config.label_sender}' mandatory=true>
+				<@input type='text' name='sender' id='sender'  value='${(sender)!}' mandatory=true/>
+			</@formGroup>
+  			<@formGroup labelKey='#i18n{module.workflow.crmforms.task_notify_crm_config.label_object}' mandatory=true>
+				<@input type='text' name='object' id='object'  value='${(object)!}' mandatory=true/>
+			</@formGroup>
+   
+  			<@formGroup labelKey='#i18n{module.workflow.crmforms.task_notify_crm_config.label_message}'  helpKey='#i18n{module.workflow.crmforms.task_notify_crm_config.label_message_comment}'  formStyle="inline" mandatory=true>
+				<@input type='textarea' name='message' id='message' value='${(message)!}' rows=15 cols=70 class="richtext" mandatory=true/>
+			</@formGroup>
+		</@div>	
+		<@div class='col-sm-4'>
+			<h3>#i18n{module.workflow.crmforms.task_notify_crm_config.markers.label_table_title}</h3>
+			<#if listMarkers?exists>
+				<select id="list_provider" name="list_provider" class="form-control">
+					<option>#i18n{module.workflow.crmforms.task_notify_crm_config.option.form_list}</option>
+					<#list listMarkers?keys as key>
+						<option value="${key?index}-form">${key}</option>
+					</#list>
+				</select>
+			</#if>
+			<@table>
+				<tr>
+					<th>#i18n{module.workflow.crmforms.task_notify_crm_config.markers.label_description}</th>
+					<th>#i18n{module.workflow.crmforms.task_notify_crm_config.markers.label_marker}</th>
+					<th></th>
+				</tr>
+				<#if listMarkers?exists>
+					<#list listMarkers?keys as key>
+						<#if listMarkers[key]?has_content>
+							<#list listMarkers[key] as marker>
+							<tr class="${key?index}-form-markers listMakers">
+								<@td class='marker'>
+									${marker.name!''}
+								</@td>
+								<@td class='marker'>&#36;&#123;${marker.code}&#33;&#125;</@td>
+								<@td><@icon style='copy' title='Copy line' /></@td>
+							</tr>
+							</#list>
+						</#if>
+					</#list>
+				</#if>
+			</@table>
+		</@div>		
+	</@row>
+	</fieldset>
+</div>
+
+<@initEditor />
+
+<style>
+	.marker:hover, .fa-copy:hover{ cursor: pointer; opacity: .8}
+	.marker:nth-child(even) td{ background: #777; color: #fff }
+</style>
+
+<script>
+$(document).ready(function(){
+	$('.marker').on( 'dblclick', function(e){
+		if( $( '.tab-pane.active .richtext' ).length > 0 ){
+			var c = '<p>' + $(this).text() + '</p>';
+			tinymce.activeEditor.insertContent( '<p>' + c + '</p>' );
+		} else { 
+			var c = $(this).text().replace(/\s+/g, ' ');
+			$('textarea').val( c );
+		}
+	});
+	//Multi forms markers
+	$('.listMakers').addClass('hidden');
+	$('#list_provider').change( function( ){
+		$('.listMakers').addClass('hidden');
+		var val = $(this).val();
+		$('.' + val + '-markers').removeClass('hidden');
+	});
+})
+
+	$('.fa-copy').on( 'click', function(e){
+		$(this).parent().prevAll().css( 'opacity','.5').animate( {opacity: 1}, 3000 );
+		var elTxt = $(this).parent().siblings().text(); 
+		copyToClipboard( elTxt );	
+	});
+	
+	function copyToClipboard( txt ) {
+		var $temp = $("<input>"), sTxt=txt.replace(/\s+/g, ' ');
+		$("body").append($temp);
+		$temp.val( sTxt ).select();
+		document.execCommand("copy");
+		$temp.remove();
+	}
+
+</script>
