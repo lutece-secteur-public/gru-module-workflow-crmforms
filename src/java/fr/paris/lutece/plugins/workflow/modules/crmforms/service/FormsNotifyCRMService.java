@@ -41,14 +41,21 @@ import fr.paris.lutece.plugins.forms.business.FormResponseHome;
 import fr.paris.lutece.plugins.forms.business.FormResponseStep;
 import fr.paris.lutece.plugins.forms.business.Question;
 import fr.paris.lutece.plugins.forms.business.QuestionHome;
+import fr.paris.lutece.plugins.forms.util.FormsConstants;
 import fr.paris.lutece.plugins.genericattributes.business.Response;
 import fr.paris.lutece.plugins.workflowcore.business.action.Action;
 import fr.paris.lutece.plugins.workflowcore.business.workflow.Workflow;
 import fr.paris.lutece.plugins.workflowcore.service.action.ActionService;
 import fr.paris.lutece.plugins.workflowcore.service.action.IActionService;
+import fr.paris.lutece.plugins.workflowcore.service.provider.InfoMarker;
 import fr.paris.lutece.plugins.workflowcore.service.task.ITask;
+import fr.paris.lutece.portal.service.i18n.I18nService;
+import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.util.ReferenceList;
+import fr.paris.lutece.util.url.UrlItem;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +77,14 @@ public class FormsNotifyCRMService implements INotifyCRMService
 {
     // MARKS
     private static final String MARK_ALL_FORMS = "All forms";
+    private static final String MARK_URL_FO_RESPONSE = "url_fo_forms_response_detail";
+    
+    // PARAMETERS
+    public static final String PARAMETER_ID_FORM_RESPONSES_FO = "id_response";
+    public static final String PARAMETER_PAGE_FORM_RESPONSE = "formsResponse";
+    public static final String PARAMETER_VIEW_FORM_RESPONSE_DETAILS_FO = "formResponseView";
+
+    private static final String MARK_FORM_RESPONSE_FO_URL = "forms.marker.provider.url.fo.detail.reponse.description";
 
     @Inject
     @Named( ActionService.BEAN_SERVICE )
@@ -103,6 +118,11 @@ public class FormsNotifyCRMService implements INotifyCRMService
             }
         }
 
+        ReferenceList referenceList = new ReferenceList( );
+        referenceList.addItem( MARK_URL_FO_RESPONSE, I18nService.getLocalizedString( MARK_FORM_RESPONSE_FO_URL , I18nService.getDefaultLocale( ) ) );
+        
+       referenceListAll.addAll( referenceList );
+
         mapMarkers.put( MARK_ALL_FORMS, referenceListAll );
 
         return mapMarkers;
@@ -127,6 +147,19 @@ public class FormsNotifyCRMService implements INotifyCRMService
                 }
             }
         }
+        
+        Collection<InfoMarker> result = new ArrayList<>( );
+        
+        InfoMarker notifyMarkerFOUrl = new InfoMarker( MARK_URL_FO_RESPONSE );
+        UrlItem urlFO = new UrlItem( AppPathService.getProdUrl( (HttpServletRequest) null ) + AppPathService.getPortalUrl( ) );
+        urlFO.addParameter( FormsConstants.PARAMETER_PAGE, PARAMETER_PAGE_FORM_RESPONSE );
+        urlFO.addParameter( FormsConstants.PARAMETER_TARGET_VIEW, PARAMETER_VIEW_FORM_RESPONSE_DETAILS_FO );
+        urlFO.addParameter( PARAMETER_ID_FORM_RESPONSES_FO, formResponse.getId( ) );
+        notifyMarkerFOUrl.setValue( urlFO.getUrl( ) );
+        result.add( notifyMarkerFOUrl );
+        
+        model.put(MARK_URL_FO_RESPONSE, urlFO.toString( ) );
+        
         return model;
     }
 
