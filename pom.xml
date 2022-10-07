@@ -13,7 +13,7 @@
     <artifactId>module-workflow-crmforms</artifactId>
     <packaging>lutece-plugin</packaging>
     
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Lutece workflow crmforms module</name>
 
     <repositories>
@@ -72,13 +72,13 @@
     <properties>
         <componentName>workflow-crmforms</componentName>
         <jiraProjectName>WORKFLOWCRMFORMS</jiraProjectName>
-        <jiraComponentId></jiraComponentId>
+        <jiraComponentId />
     </properties>
     
     <scm>
         <connection>scm:git:https://github.com/lutece-secteur-public/gru-module-workflow-crmforms.git</connection>
         <developerConnection>scm:git:https://github.com/lutece-secteur-public/gru-module-workflow-crmforms.git</developerConnection>
         <url>https://github.com/lutece-secteur-public/gru-module-workflow-crmforms.git</url>
-      <tag>HEAD</tag>
+      <tag>module-workflow-crmforms-1.0.0</tag>
     </scm>
 </project>
