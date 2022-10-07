@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plug-in>
+<?xml version="1.0" encoding="UTF-8"?><plug-in>
     <name>workflow-crmforms</name>
     <class>fr.paris.lutece.plugins.workflow.modules.crmforms.service.CRMFormsPlugin</class>
-    <version>1.0.0-SNAPSHOT</version>
-    <documentation></documentation>
-    <installation></installation>
-    <changes></changes>
-    <user-guide></user-guide>
+    <version>1.0.0</version>
+    <documentation/>
+    <installation/>
+    <changes/>
+    <user-guide/>
     <description>module.workflow.crmforms.module.description</description>
     <provider>module.workflow.crmforms.module.provider</provider>
     <provider-url>http://lutece.paris.fr</provider-url>
