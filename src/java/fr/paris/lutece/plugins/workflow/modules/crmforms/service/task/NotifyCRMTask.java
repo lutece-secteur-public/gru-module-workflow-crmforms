@@ -47,9 +47,13 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import java.util.Locale;
+import java.util.Map;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -63,6 +67,8 @@ public class NotifyCRMTask extends SimpleTask
     private ITaskConfigService _taskConfigService;
     @Inject
     private IResourceHistoryService _resourceHistoryService;
+    @Inject 
+    private INotifyCRMService _notifyCRMService;
 
     private static final String TASK_NOTIFY_CRM_TITLE = "Notifier Mon Compte";
 
@@ -115,7 +121,7 @@ public class NotifyCRMTask extends SimpleTask
         String strIdDemandType = AppPropertiesService.getProperty( NotifyCRMConstants.PROPERTY_ID_DEMAND_TYPE_CRM );
         String strStatusText = notifyCRMConfig.getStatusText( );
         String strSender = notifyCRMConfig.getSender( );
-        String strObject = notifyCRMConfig.getObject( );
+        String strObject = replaceMarkersByValues( notifyCRMConfig.getObject( ), resourceHistory.getIdResource( )  );
         String strMessageFillWithUserInfos = taskProvider.getTaskResourceInfo( nIdResourceHistory, getId( ), request );
 
         if ( notifyCRMConfig.getDemandCRMCreation( ) )
@@ -145,5 +151,26 @@ public class NotifyCRMTask extends SimpleTask
                 AppLogService.error( "NotifyCRMTask : unable to send updating demand ", e );
             }
         }
+    }  
+    
+    /**
+     * Method to replace markers by values
+     * @param strContent
+     * @param nIdRessource
+     * @return 
+     */
+    private String replaceMarkersByValues( String strContent, int nIdRessource )
+    {
+        Map<String, Object> model = _notifyCRMService.fillModelInfoResource( nIdRessource );
+        
+        if( StringUtils.isNotEmpty( strContent ) && !model.isEmpty( ) )
+        {
+            for( Map.Entry<String, Object> resource: model.entrySet( ) )
+            {
+                strContent = strContent.replace( "${" + resource.getKey( ) + "!}", String.valueOf( resource.getValue( ) ) );
+            }
+        }
+        
+        return strContent;
     }
 }
